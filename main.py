@@ -1,10 +1,12 @@
 """Write the make.fun one-sentence journey entry to entry.txt.
 
-Reads MAKEFUN_OUTPUT_DIR (default: /output), creates it if needed, and writes
-the required UTF-8 entry text followed by a single trailing newline.
+Reads MAKEFUN_OUTPUT_DIR (default: /output), creates that directory if it is
+missing, and writes the required UTF-8 entry text followed by a single
+trailing newline. Exits with a clear error if the directory cannot be created.
 """
 
 import os
+import sys
 
 ENTRY_TEXT = (
     "Every winter for thirty years my father skied the pass to bring the post "
@@ -16,7 +18,10 @@ ENTRY_TEXT = (
 
 def main() -> None:
     output_dir = os.environ.get("MAKEFUN_OUTPUT_DIR") or "/output"
-    os.makedirs(output_dir, exist_ok=True)
+    try:
+        os.makedirs(output_dir, exist_ok=True)
+    except OSError as exc:
+        sys.exit(f"error: cannot create output directory {output_dir!r}: {exc}")
     with open(os.path.join(output_dir, "entry.txt"), "w", encoding="utf-8") as fh:
         fh.write(ENTRY_TEXT + "\n")
 
